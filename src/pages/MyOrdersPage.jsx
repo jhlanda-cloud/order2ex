@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 function statusBadgeClass(status) {
   if (status === '접수') return 'border-orange-300 bg-orange-100 text-orange-700 hover:bg-orange-100'
@@ -9,8 +11,14 @@ function statusBadgeClass(status) {
 }
 
 export default function MyOrdersPage() {
+  const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    navigate('/')
+  }
 
   useEffect(() => {
     supabase
@@ -27,7 +35,17 @@ export default function MyOrdersPage() {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-xl font-semibold">내 주문</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">내 주문</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate('/')}>
+            홈으로
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            로그아웃
+          </Button>
+        </div>
+      </div>
 
       {orders.length === 0 ? (
         <p>주문 내역이 없습니다.</p>
